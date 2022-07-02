@@ -2,34 +2,34 @@ package com.example.homework5;
 
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
-    private final List<Employee> employeeList;
+    private final Map<Integer, Employee> employeeMap;
 
-    public EmployeeServiceImpl(){
-        this.employeeList = new ArrayList<>();
+    public EmployeeServiceImpl(Map<Integer, Employee> employeeMap) {
+        this.employeeMap = employeeMap;
     }
+
 
     @Override
     public Employee add(String fristName, String secondName) {
         Employee employee = new Employee(fristName,  secondName);
-        if (employeeList.contains(employee)){
+        if (employeeMap.containsValue(employee)){
             throw new EmployeeAlreadyAddedException();
         }
-        employeeList.add(employee);
+        employeeMap.put(employee.hashCode(), employee);
         return employee;
     }
 
     @Override
     public Employee remove(String fristName, String secondName) {
         Employee employee = new Employee(fristName,  secondName);
-        if (employeeList.contains(employee)){
-            employeeList.remove(employee);
+        if (employeeMap.containsValue(employee)){
+            employeeMap.remove(employee);
             return employee;
         }
         throw new EmployeeNotFoundException();
@@ -38,14 +38,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee find(String fristName, String secondName) {
         Employee employee = new Employee(fristName,  secondName);
-        if (employeeList.contains(employee)){
-            return employee;
+        if (employeeMap.containsValue(employee)){
+            return employeeMap.get(employee.hashCode());
         }
         throw new EmployeeNotFoundException();
     }
 
     @Override
     public Collection<Employee> findAll() {
-        return new ArrayList<>(employeeList);
+        return employeeMap.values();
     }
 }
